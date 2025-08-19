@@ -1,10 +1,19 @@
-- name: Install Cilium
+- name: Add Cilium Helm repo
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io
+
+- name: Install/Upgrade Cilium
   kubernetes.core.helm:
     name: cilium
-    chart_ref: cilium
-    chart_repo_url: "{{ cilium_repo_url }}"
+    chart_ref: "cilium/cilium"
     chart_version: "{{ cilium_version }}"
     release_namespace: "{{ cilium_namespace }}"
+    create_namespace: true
+    update_repo_cache: true
+    atomic: true
+    wait: true
+    wait_timeout: "10m"     # <- antes era 600 (int); use "10m" ou "600s"
     values: "{{ cilium_values }}"
 
 - name: Wait for Cilium CRDs

@@ -16,7 +16,7 @@ argocd-apps:
       generators:
         - git:
             repoURL: &repoURL https://github.com/candradebh/homelab2026
-            revision: &revision master
+            revision: &revision main
             directories:
               - path: system/*
               - path: platform/*

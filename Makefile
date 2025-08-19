@@ -25,6 +25,9 @@ k3s-reboot:
 	cd k3s-ansible && \
 	ansible-playbook playbooks/reboot.yml -i ../inventory.yml
 
+configure-cluster:
+	ansible-playbook ./roles/configure-cluster.yml -i inventory.yml
+
 configure:
 	./scripts/configure
 	git status

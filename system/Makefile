@@ -1,6 +1,6 @@
 .POSIX:
 
-export KUBECONFIG = $(shell pwd)/../metal/kubeconfig.yaml
+export KUBECONFIG := $(HOME)/.kube/kubeconfig.yaml
 
 .PHONY: bootstrap
 bootstrap:
