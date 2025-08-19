@@ -22,25 +22,6 @@ done
 ```
 
 
-**[Features](#features) • [Get Started](#get-started) • [Documentation](https://homelab.multiversonline.com.br)**
-
-[![tag](https://img.shields.io/github/v/tag/multiversonline/homelab?style=flat-square&logo=semver&logoColor=white)](https://github.com/multiversonline/homelab/tags)
-[![document](https://img.shields.io/website?label=document&logo=gitbook&logoColor=white&style=flat-square&url=https%3A%2F%2Fhomelab.multiversonline.com.br)](https://homelab.multiversonline.com.br)
-[![license](https://img.shields.io/github/license/multiversonline/homelab?style=flat-square&logo=gnu&logoColor=white)](https://www.gnu.org/licenses/gpl-3.0.html)
-[![stars](https://img.shields.io/github/stars/multiversonline/homelab?logo=github&logoColor=white&color=gold&style=flat-square)](https://github.com/multiversonline/homelab)
-
-This project utilizes [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) and [GitOps](https://www.weave.works/technologies/gitops) to automate provisioning, operating, and updating self-hosted services in my homelab.
-It can be used as a highly customizable framework to build your own homelab.
-
-> **What is a homelab?**
->
-> Homelab is a laboratory at home where you can self-host, experiment with new technologies, practice for certifications, and so on.
-> For more information, please see the [r/homelab introduction](https://www.reddit.com/r/homelab/wiki/introduction) and the
-> [Home Operations Discord community](https://discord.gg/home-operations) (formerly known as [k8s-at-home](https://k8s-at-home.com)).
-
-If you encounter an issue, please create [a bug report](https://github.com/multiversonline/homelab/issues/new?template=bug_report.md)
-(avoid asking for support about issues specific to this project in other communication channels).
-
 ## Overview
 
 Project status: **ALPHA**
@@ -84,42 +65,6 @@ More information can be found in [the roadmap](#roadmap) below.
 Some demo videos and screenshots are shown here.
 They can't capture all the project's features, but they are sufficient to get a concept of it.
 
-| Demo                                                                                                            |
-| :--:                                                                                                            |
-| [![][deploy-demo]](https://asciinema.org/a/xkBRkwC6e9RAzVuMDXH3nGHp7)                                           |
-| Deploy with a single command (after updating the configuration files)                                           |
-| [![][pxe-demo]](https://www.youtube.com/watch?v=y-d7btNNAT8)                                                    |
-| PXE boot                                                                                                        |
-| [![][hubble-demo]][hubble-demo]                                                                                 |
-| Observe network traffic with Hubble, built on top of [Cilium](https://cilium.io) and eBPF                       |
-| [![][homepage-demo]][homepage-demo]                                                                             |
-| Homepage powered by... [Homepage](https://gethomepage.dev)                                                      |
-| [![][grafana-demo]][grafana-demo]                                                                               |
-| Monitoring dashboard powered by [Grafana](https://grafana.com)                                                  |
-| [![][gitea-demo]][gitea-demo]                                                                                   |
-| Git server powered by [Gitea](https://gitea.io/en-us)                                                           |
-| [![][matrix-demo]][matrix-demo]                                                                                 |
-| [Matrix](https://matrix.org/) chat server                                                                       |
-| [![][woodpecker-demo]][woodpecker-demo]                                                                         |
-| Continuous integration with [Woodpecker CI](https://woodpecker-ci.org)                                          |
-| [![][argocd-demo]][argocd-demo]                                                                                 |
-| Continuous deployment with [ArgoCD](https://argoproj.github.io/cd)                                              |
-| [![][alert-demo]][alert-demo]                                                                                   |
-| [ntfy](https://ntfy.sh) displaying received alerts                                                              |
-| [![][ai-demo]][ai-demo]                                                                                         |
-| Self-hosted AI powered by [Ollama](https://ollama.com) (experimental, not very fast because I don't have a GPU) |
-
-[deploy-demo]: https://asciinema.org/a/xkBRkwC6e9RAzVuMDXH3nGHp7.svg
-[pxe-demo]: https://user-images.githubusercontent.com/27996771/157303477-df2e7410-8f02-4648-a86c-71e6b7e89e35.png
-[hubble-demo]: https://github.com/multiversonline/homelab/assets/27996771/9c6677d0-3564-47c0-852b-24b6a554b4a3
-[homepage-demo]: https://github.com/multiversonline/homelab/assets/27996771/d0eaf620-be08-48d8-8420-40bcaa86093b
-[grafana-demo]: https://github.com/multiversonline/homelab/assets/27996771/ad937b26-e9bc-4761-83ae-1c7f512ea97f
-[gitea-demo]: https://github.com/multiversonline/homelab/assets/27996771/c245534f-88d9-4565-bde8-b39f60ccee9e
-[matrix-demo]: https://user-images.githubusercontent.com/27996771/149448510-7163310c-2049-4ccd-901d-f11f605bfc32.png
-[woodpecker-demo]: https://github.com/multiversonline/homelab/assets/27996771/5d887688-d20a-44c8-8f77-0c625527dfe4
-[argocd-demo]: https://github.com/multiversonline/homelab/assets/27996771/527e2529-4fe1-4664-ab8a-b9eb3c492d20
-[alert-demo]: https://github.com/multiversonline/homelab/assets/27996771/c922f755-e911-4ca0-9d4a-6e552d387f18
-[ai-demo]: https://github.com/multiversonline/homelab/assets/27996771/d77ba511-00b7-47c3-9032-55679a099e70
 
 ### Tech stack
 
@@ -273,7 +218,7 @@ Please see [contributing guide](https://homelab.multiversonline.com.br/reference
 
 ## License
 
-Copyright &copy; 2020 - 2024 multiversonline Doan
+Copyright &copy; 2020 - 2024 multiversonline
 
 Distributed under the GPLv3 License.
 See [license page](https://homelab.multiversonline.com.br/reference/license) or `LICENSE.md` file for more information.
@@ -298,29 +243,3 @@ References:
 - [App Template Helm chart by bjw-s](https://bjw-s-labs.github.io/helm-charts/docs/app-template)
 - [Various application configurations in onedr0p/home-ops](https://github.com/onedr0p/home-ops)
 
-Here is a list of the contributors who have helped to improve this project.
-Big shout-out to them!
-
-- ![](https://github.com/locmai.png?size=24) [@locmai](https://github.com/locmai)
-- ![](https://github.com/MatthewJohn.png?size=24) [@MatthewJohn](https://github.com/MatthewJohn)
-- ![](https://github.com/karpfediem.png?size=24) [@karpfediem](https://github.com/karpfediem)
-- ![](https://github.com/linhng98.png?size=24) [@linhng98](https://github.com/linhng98)
-- ![](https://github.com/elliotblackburn.png?size=24) [@elliotblackburn](https://github.com/elliotblackburn)
-- ![](https://github.com/dotdiego.png?size=24) [@dotdiego](https://github.com/dotdiego)
-- ![](https://github.com/Crimrose.png?size=24) [@Crimrose](https://github.com/Crimrose)
-- ![](https://github.com/eventi.png?size=24) [@eventi](https://github.com/eventi)
-- ![](https://github.com/Bourne-ID.png?size=24) [@Bourne-ID](https://github.com/Bourne-ID)
-- ![](https://github.com/akwan.png?size=24) [@akwan](https://github.com/akwan)
-- ![](https://github.com/trangmaiq.png?size=24) [@trangmaiq](https://github.com/trangmaiq)
-- ![](https://github.com/tangowithfoxtrot.png?size=24) [@tangowithfoxtrot](https://github.com/tangowithfoxtrot)
-- ![](https://github.com/raedkit.png?size=24) [@raedkit](https://github.com/raedkit)
-- ![](https://github.com/ClashTheBunny.png?size=24) [@ClashTheBunny](https://github.com/ClashTheBunny)
-- ![](https://github.com/retX0.png?size=24) [@retX0](https://github.com/retX0)
-- ![](https://github.com/zalsader.png?size=24) [@zalsader](https://github.com/zalsader)
-- ![](https://github.com/serpro69.png?size=24) [@serpro69](https://github.com/serpro69)
-
-If you feel you're missing from this list, please feel free to add yourself in a PR.
-
-## Stargazers over time
-
-[![Stargazers over time](https://starchart.cc/multiversonline/homelab.svg)](https://starchart.cc/multiversonline/homelab)
