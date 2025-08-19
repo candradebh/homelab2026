@@ -2,7 +2,8 @@
 .PHONY: *
 .EXPORT_ALL_VARIABLES:
 
-KUBECONFIG = $(shell pwd)/metal/kubeconfig.yaml
+#SE ALTERAR AQUI: altere também em ./roles/fetch-kubeconfig/vars/main.yaml
+KUBECONFIG := $(HOME)/.kube/kubeconfig.yaml
 KUBE_CONFIG_PATH = $(KUBECONFIG)
 
 default: k3s configure-cluster system external smoke-test post-install clean
