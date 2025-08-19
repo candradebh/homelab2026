@@ -5,7 +5,24 @@
 KUBECONFIG = $(shell pwd)/metal/kubeconfig.yaml
 KUBE_CONFIG_PATH = $(KUBECONFIG)
 
-default: metal system external smoke-test post-install clean
+default: k3s configure-cluster system external smoke-test post-install clean
+
+########### CLuster
+k3s:
+	cd k3s-ansible && \
+    	ansible-playbook playbooks/site.yml -i ../inventory.yml
+
+k3s-reset:
+	cd k3s-ansible && \
+		ansible-playbook playbooks/reset.yml -i ../inventory.yml
+
+k3s-upgrade:
+	cd k3s-ansible && \
+		ansible-playbook playbooks/upgrade.yml -i ../inventory.yml
+
+k3s-reboot:
+	cd k3s-ansible && \
+	ansible-playbook playbooks/reboot.yml -i ../inventory.yml
 
 configure:
 	./scripts/configure
