@@ -67,3 +67,6 @@ docs:
 
 git-hooks:
 	pre-commit install
+
+passwords:
+	ansible-playbook ./roles/passwords.yml -i inventory.yml
