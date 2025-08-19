@@ -33,7 +33,7 @@ More information can be found in [the roadmap](#roadmap) below.
 
 ### Hardware
 
-![Hardware](https://user-images.githubusercontent.com/27996771/98970963-25137200-2543-11eb-8f2d-f9a2d45756ef.JPG)
+![Hardware](https://pve.proxmox.com/mediawiki/images/thumb/a/a3/Proxmox-VE-Cluster-Summary.png/800px-Proxmox-VE-Cluster-Summary.png)
 
 - 4 × VM PROXMOX :
     - CPU: `12 vCPU`
