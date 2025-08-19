@@ -5,6 +5,8 @@ Automação e gerenciamento do meu homelab com Kubernetes (K3s) + Ansible + MkDo
 ### VMS do Cluster
 Criar VMS ubuntu 22 e acesso ssh com root, segui esses ips, pois são os da minha rede e já estão estáticos no meu roteador.
 
+Todas as maquinas devem ter um disco separado para rook-ceph
+
 BC:24:11:8E:3E:F6 - 192.168.1.50 - kubmaster1
 BC:24:11:FB:96:1C - 192.168.1.51 - kubmaster2
 BC:24:11:CA:E2:86 - 192.168.1.52 - kubmaster3
@@ -56,15 +58,14 @@ More information can be found in [the roadmap](#roadmap) below.
     - CPU: `12 vCPU`
     - RAM: `16GB`
     - SSD: `200GB`
+    - SSD: `200GB`
 
 
 ### Features
 
 - [x] Common applications: Gitea, Jellyfin, Paperless...
-- [x] Automated bare metal provisioning with PXE boot
 - [x] Automated Kubernetes installation and management
 - [x] Installing and managing applications using GitOps
-- [x] Automatic rolling upgrade for OS and Kubernetes
 - [x] Automatically update apps (with approval)
 - [x] Modular architecture, easy to add or remove features/components
 - [x] Automated certificate management
