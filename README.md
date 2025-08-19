@@ -1,5 +1,25 @@
 # multiversonline's Homelab
 
+Automação e gerenciamento do meu homelab com Kubernetes (K3s) + Ansible + MkDocs.
+
+### VMS do Cluster
+Criar VMS ubuntu 22 e acesso ssh com root, segui esses ips, pois são os da minha rede e já estão estáticos no meu roteador.
+
+BC:24:11:8E:3E:F6 - 192.168.1.50 - kubmaster1
+BC:24:11:FB:96:1C - 192.168.1.51 - kubmaster2
+BC:24:11:CA:E2:86 - 192.168.1.52 - kubmaster3
+BC:24:11:8E:3E:F7 - 192.168.1.53 - kubnode1
+
+Fornecer acesso a máquina que vai executar via ssh. 
+
+```
+for ip in 192.168.1.50 192.168.1.51 192.168.1.52 192.168.1.53; do
+  echo "➡️ Copiando chave para $ip..."
+  ssh-copy-id -i ~/.ssh/id_ed25519.pub root@$ip
+done
+```
+
+
 **[Features](#features) • [Get Started](#get-started) • [Documentation](https://homelab.multiversonline.com.br)**
 
 [![tag](https://img.shields.io/github/v/tag/multiversonline/homelab?style=flat-square&logo=semver&logoColor=white)](https://github.com/multiversonline/homelab/tags)
@@ -32,13 +52,11 @@ More information can be found in [the roadmap](#roadmap) below.
 
 ![Hardware](https://user-images.githubusercontent.com/27996771/98970963-25137200-2543-11eb-8f2d-f9a2d45756ef.JPG)
 
-- 4 × NEC SFF `PC-MK26ECZDR` (Japanese version of the ThinkCentre M700):
-    - CPU: `Intel Core i5-6600T @ 2.70GHz`
+- 4 × VM PROXMOX :
+    - CPU: `12 vCPU`
     - RAM: `16GB`
-    - SSD: `128GB`
-- TP-Link `TL-SG108` switch:
-    - Ports: `8`
-    - Speed: `1000Mbps`
+    - SSD: `200GB`
+
 
 ### Features
 
