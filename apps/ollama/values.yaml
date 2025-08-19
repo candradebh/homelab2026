@@ -5,7 +5,7 @@ app-template:
         main:
           image:
             repository: docker.io/ollama/ollama
-            tag: 0.1.29
+            tag: latest
     ui:
       containers:
         main:
@@ -20,6 +20,9 @@ app-template:
         http:
           port: 11434
           protocol: HTTP
+      models:
+        - llava
+        - gemma3
     ui:
       controller: ui
       ports:
@@ -55,8 +58,15 @@ app-template:
   persistence:
     data:
       accessMode: ReadWriteOnce
-      size: 10Gi
+      size: 30Gi
       advancedMounts:
         main:
           main:
             - path: /root/.ollama
+    ui:
+      accessMode: ReadWriteOnce
+      size: 10Gi
+      advancedMounts:
+        ui:
+          main:
+            - path: /app/backend/data
