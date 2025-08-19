@@ -16,15 +16,15 @@ repositories:
     owner: ops
     private: false
     migrate:
-      source: https://github.com/multiversonline/homelab
+      source: https://github.com/candradebh/homelab2026
       mirror: false
-  - name: blog
+  - name: smartdev
     owner: multiversonline
     migrate:
-      source: https://github.com/multiversonline/blog
+      source: https://github.com/candradebh/smartdev
       mirror: true
   - name: backstage
     owner: multiversonline
     migrate:
-      source: https://github.com/multiversonline/backstage
+      source: https://github.com/candradebh/backstage
       mirror: true
