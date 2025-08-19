@@ -1,0 +1,30 @@
+# TODO create user and access token
+# users:
+#   - name: renovate
+#     fullName: Renovate
+#     email: bot@renovateapp.com
+#     tokenSecretRef: renovate-secret # ???
+organizations:
+  - name: ops
+    description: Operations
+    teams:
+      - name: Owners
+        members:
+          - renovate
+repositories:
+  - name: homelab
+    owner: ops
+    private: false
+    migrate:
+      source: https://github.com/multiversonline/homelab
+      mirror: false
+  - name: blog
+    owner: multiversonline
+    migrate:
+      source: https://github.com/multiversonline/blog
+      mirror: true
+  - name: backstage
+    owner: multiversonline
+    migrate:
+      source: https://github.com/multiversonline/backstage
+      mirror: true
