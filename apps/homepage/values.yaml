@@ -64,6 +64,10 @@ app-template:
                 href: https://chat.multiversonline.com.br
                 description: Chat client
                 icon: element.svg
+            - LLM:
+                  href: https://ai.multiversonline.com.br
+                  description: AI LLM Chat
+                  icon: element.svg
             - Jellyfin:
                 href: https://jellyfin.multiversonline.com.br
                 description: Media system (movies, music, etc.)
