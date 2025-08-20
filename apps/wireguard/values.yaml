@@ -74,8 +74,8 @@ app-template:
                   # Clients
 
                   [Peer]
-                  # multiversonline-ryzentower
-                  PublicKey = qnDY23ZWUOlCRUmB8anpXH1uzX0A17F1YtQJmVi7GWM=
+                  # multiversonline-supermaquina
+                  PublicKey = nITHFdgTkNZOTWeSWqnGXjgwlCJMKRCnnUsjMx2yp2U=
                   AllowedIPs = 172.16.0.10/32
 
                   [Peer]
