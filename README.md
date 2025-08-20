@@ -22,6 +22,7 @@ done
 ```
 
 
+
 ## Overview
 
 Project status: **ALPHA**
@@ -243,3 +244,35 @@ References:
 - [App Template Helm chart by bjw-s](https://bjw-s-labs.github.io/helm-charts/docs/app-template)
 - [Various application configurations in onedr0p/home-ops](https://github.com/onedr0p/home-ops)
 
+
+## OLLAMA
+
+```
+kubectl get pods -n ollama
+kubectl exec -it -n ollama pod/ollama- -- bash
+ollama run gemma3n
+```
+
+
+## ROOK-CEPH
+
+```
+sudo wipefs -a /dev/sdb
+sudo blkdiscard /dev/sdb || sudo dd if=/dev/zero of=/dev/sdb bs=1M count=100
+```
+
+
+kubectl delete pod -n rook-ceph -l app=rook-ceph-operator
+
+
+kubectl -n rook-ceph logs -l app=rook-ceph-operator
+
+kubectl get deployments.apps -n rook-ceph
+
+kubectl rollout restart deployment rook-ceph-operator -n rook-ceph
+
+1- parar
+kubectl -n rook-ceph scale deployment rook-ceph-operator --replicas=0
+
+2 - rodar novamente
+kubectl -n rook-ceph scale deployment rook-ceph-operator --replicas=1

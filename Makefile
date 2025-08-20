@@ -70,3 +70,6 @@ git-hooks:
 
 passwords:
 	ansible-playbook ./roles/passwords.yml -i inventory.yml
+
+wipe-disk:
+	ansible-playbook ./roles/wipe-disk.yml -i inventory.yml
