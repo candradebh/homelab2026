@@ -1,0 +1,79 @@
+# values.yaml — PostgreSQL no modelo app-template (bjw-s)
+
+app-template:
+  defaultPodOptions:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      runAsGroup: 999
+      fsGroup: 999
+
+  controllers:
+    postgres:
+      type: statefulset
+      replicas: 1
+      strategy: RollingUpdate
+      statefulset:
+        podManagementPolicy: OrderedReady
+
+      containers:
+        main:
+          image:
+            repository: postgres
+            tag: "16"
+            pullPolicy: IfNotPresent
+
+          ports:
+            - name: postgres
+              containerPort: 5432
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: app-postgres-secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-postgres-secret
+                  key: POSTGRES_PASSWORD
+
+          probes:
+            readiness:
+              enabled: true
+              type: exec
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+              initialDelaySeconds: 10
+              periodSeconds: 5
+            liveness:
+              enabled: true
+              type: exec
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1 -p 5432
+              initialDelaySeconds: 20
+              periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 2Gi
+
+  service:
+    postgres:
+      controller: postgres
+      type: ClusterIP
+      ports:
