@@ -37,3 +37,10 @@
     - key: PAPERLESS_ADMIN_PASSWORD
       length: 32
       special: true
+
+# Postgres Backstage
+- name: postgres.admin
+  data:
+    - key: POSTGRES_ADMIN_PASSWORD
+      length: 32
+      special: true
