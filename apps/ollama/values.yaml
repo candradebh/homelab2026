@@ -21,8 +21,7 @@ app-template:
           port: 11434
           protocol: HTTP
       models:
-        - llava
-        - gemma3
+        - gemma3n
     ui:
       controller: ui
       ports:
