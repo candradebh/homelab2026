@@ -41,13 +41,13 @@
 
 
 # keycloak
-- name: keycloack.admin
+- name: keycloak.admin
   data:
     - key: admin_secret
       length: 32
-      special: false
+      special: true
 
-- name: keycloack.postgres
+- name: keycloak.postgres
   data:
     - key: postgres_secret
       length: 32
@@ -55,6 +55,6 @@
 
 - name: keycloak.password
   data:
-    - key: keckoak_secret
+    - key: keycloak_secret
       length: 32
-      special: false
+      special: true
