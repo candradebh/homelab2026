@@ -1,0 +1,7 @@
+apiVersion: v2
+name: CHANGEME
+version: 0.0.0
+dependencies:
+- name: CHANGEME
+  version: CHANGEME
+  repository: CHANGEME

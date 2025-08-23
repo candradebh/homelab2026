@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak-selfsigned
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: keycloak-selfsigned-certificate
+  issuerRef:
+    kind: Issuer
+    name: keycloak-selfsigned
+  dnsNames:
+    - home.arpa

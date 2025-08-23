@@ -1,0 +1,162 @@
+app-template:
+  controllers:
+    main:                          # === KEYCLOAK ===
+      type: statefulset
+      containers:
+        main:
+          image:
+            repository: quay.io/keycloak/keycloak
+            tag: 26.0.0
+          # Keycloak 17+ exige "start"
+          args: ["start"]
+          env:
+            # Atrás de Ingress (TLS só no Ingress)
+            KC_PROXY: edge
+            KC_HTTP_ENABLED: "true"
+            KC_HEALTH_ENABLED: "true"
+            KC_METRICS_ENABLED: "true"
+            KC_HOSTNAME: login.multiversonline.com.br
+
+            # DB (aponta para o Service "postgres" abaixo)
+            KC_DB: postgres
+            KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+          envFrom:
+            - secretRef:
+                name: keycloak-secrets
+
+          # Probes de saúde
+          probes:
+            liveness:
+              enabled: true
+              type: http
+              path: /health/live
+              port: 8080
+            readiness:
+              enabled: true
+              type: http
+              path: /health/ready
+              port: 8080
+
+      # Armazenamento do Keycloak (útil para export/backup, temas/providers, etc.)
+      statefulset:
+        volumeClaimTemplates:
+          - name: data
+            size: 5Gi
+            storageClass: standard-rwo
+            accessMode: "ReadWriteOnce"
+            globalMounts:
+              - path: /opt/keycloak/data
+
+    db:                            # === POSTGRES ===
+      type: statefulset
+      containers:
+        main:
+          image:
+            repository: docker.io/postgres
+            tag: "16"
+          envFrom:
+            - secretRef:
+                name: keycloak-secrets
+          # Se quiser tunar: POSTGRES_INITDB_ARGS, max_connections, etc.
+      statefulset:
+        volumeClaimTemplates:
+          - name: data
+            size: 10Gi
+            storageClass: standard-rwo
+            accessMode: "ReadWriteOnce"
+            globalMounts:
+              - path: /var/lib/postgresql/data
+
+  # (Opcional) Temas customizados
+  configMaps:
+    themes:
+      enabled: true
+      data:
+        custom-theme/theme.properties: |
+          parent=keycloak
+          styles=css/styles.css
+        custom-theme/css/styles.css: |
+          /* seu CSS aqui */
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8080
+          protocol: HTTP
+
+    db:
+      controller: db
+      nameOverride: postgres        # DNS interno ficará "postgres"
+      ports:
+        postgres:
+          port: 5432
+          protocol: TCP
+
+  ingress:
+    main:
+      enabled: true
+      className: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+      hosts:
+        - host: &host login.multiversonline.com.br
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: http
+      tls:
+        - hosts:
+            - *host
+          secretName: keycloak-tls
+
+  # Montagens adicionais (temas/providers)
+  persistence:
+    themes:
+      enabled: true
+      type: configMap
+      name: app-template-themes     # garanta que o nome aqui case com o gerado pelo chart
+      globalMounts:
+        - path: /opt/keycloak/themes/custom
+          readOnly: true
+
+    dbdata:
+      accessMode: ReadWriteOnce
+      size: 10Gi
+      storageClass: standard-rwo
+      advancedMounts:
+        db:
+          main:
+            - path: /var/lib/postgresql/data
+
+    keycloakdata:
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      storageClass: standard-rwo
+      advancedMounts:
+        main:
+          main:
+            - path: /opt/keycloak/data
+  envFrom:
+    - secretRef:
+        name: keycloak-secrets
+
+  # Secret único para credenciais de admin e do banco
+  secrets:
+    keycloak-secrets:
+      stringData:
+        # Admin bootstrap (Keycloak 26+)
+        KC_BOOTSTRAP_ADMIN_USERNAME: admin
+        KC_BOOTSTRAP_ADMIN_PASSWORD: $KC_BOOTSTRAP_ADMIN_PASSWORD
+
+        # Credenciais do Postgres (usadas por ambos)
+        # Para o Postgres:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+
+        # Para o Keycloak:
+        KC_DB_USERNAME: keycloak
+        KC_DB_PASSWORD: $KC_DB_PASSWORD

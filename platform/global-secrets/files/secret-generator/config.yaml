@@ -37,3 +37,24 @@
     - key: PAPERLESS_ADMIN_PASSWORD
       length: 32
       special: true
+
+
+
+# keycloak
+- name: keycloack.admin
+  data:
+    - key: admin_secret
+      length: 32
+      special: false
+
+- name: keycloack.postgres
+  data:
+    - key: postgres_secret
+      length: 32
+      special: false
+
+- name: keycloak.password
+  data:
+    - key: keckoak_secret
+      length: 32
+      special: false
