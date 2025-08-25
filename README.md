@@ -204,7 +204,7 @@ Please see [contributing guide](https://homelab.multiversonline.com.br/reference
 
 ## License
 
-Copyright &copy; 2020 - 2024 multiversonline
+Copyright &copy; 2024 - 2025 multiversonline
 
 Distributed under the GPLv3 License.
 See [license page](https://homelab.multiversonline.com.br/reference/license) or `LICENSE.md` file for more information.
