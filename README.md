@@ -260,3 +260,26 @@ kubectl -n rook-ceph scale deployment rook-ceph-operator --replicas=0
 
 2 - rodar novamente
 kubectl -n rook-ceph scale deployment rook-ceph-operator --replicas=1
+
+
+
+# dex
+kubectl -n dex get deploy -o name \
+| xargs -r -n1 kubectl -n dex rollout restart
+
+# renovate
+kubectl -n renovate get deploy -o name \
+| xargs -r -n1 kubectl -n renovate rollout restart
+
+# woodpecker
+kubectl -n woodpecker get deploy -o name \
+| xargs -r -n1 kubectl -n woodpecker rollout restart
+
+
+
+for ns in dex renovate woodpecker; do
+for kind in deploy statefulset daemonset; do
+kubectl -n "$ns" get "$kind" -o name \
+| xargs -r -n1 kubectl -n "$ns" rollout restart
+done
+done
