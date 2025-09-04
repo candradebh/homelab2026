@@ -1,11 +1,14 @@
 - name: Bootstrapping the cluster
   hosts: localhost
+  gather_facts: false
+  vars:
+    argocd_ns: argocd
   tasks:
     - name: Create ArgoCD namespace
       kubernetes.core.k8s:
         api_version: v1
         kind: Namespace
-        name: argocd
+        name: "{{ argocd_ns }}"
         state: present
 
     - name: Check if this is the first installation
@@ -17,20 +20,72 @@
           - status.phase=Running
       register: first_install
 
-    - name: Render ArgoCD manifests from Helm chart
+    - name: Render ArgoCD manifests from Helm chart (includes CRDs)
       kubernetes.core.helm_template:
         chart_ref: ./argocd
         include_crds: true
         release_name: argocd
-        release_namespace: argocd
+        release_namespace: "{{ argocd_ns }}"
         dependency_update: true
         values_files:
           - "argocd/{{ (first_install.resources | length == 0) | ternary('values-seed.yaml', 'values.yaml') }}"
-      register: argocd_manifests
+      register: argocd_tpl
 
-    - name: Apply ArgoCD manifests
+    # --- SEPARA CRDs dos demais recursos ---
+    - name: Parse rendered manifests
+      set_fact:
+        argocd_docs: "{{ argocd_tpl.stdout | from_yaml_all | list }}"
+
+    - name: Select only CRDs
+      set_fact:
+        argocd_crds: "{{ argocd_docs | selectattr('kind','equalto','CustomResourceDefinition') | list }}"
+        argocd_non_crds: "{{ argocd_docs | rejectattr('kind','equalto','CustomResourceDefinition') | list }}"
+
+    # 1) Aplica CRDs primeiro
+    - name: Apply ArgoCD CRDs
       kubernetes.core.k8s:
-        resource_definition: "{{ argocd_manifests.stdout }}"
+        state: present
+        definition: "{{ item }}"
+      loop: "{{ argocd_crds }}"
+      loop_control: { label: "{{ item.metadata.name }}" }
+
+    # 2) Espera os CRDs ficarem Established
+    - name: Wait for CRD applications.argoproj.io
+      kubernetes.core.k8s_info:
+        api_version: apiextensions.k8s.io/v1
+        kind: CustomResourceDefinition
+        name: applications.argoproj.io
+      register: crd_app
+      until: crd_app.resources | length > 0 and
+        (crd_app.resources.0.status.conditions
+        | selectattr('type','equalto','Established')
+        | selectattr('status','equalto','True') | list | length) > 0
+      retries: 30
+      delay: 4
+
+    - name: Wait for CRD applicationsets.argoproj.io
+      kubernetes.core.k8s_info:
+        api_version: apiextensions.k8s.io/v1
+        kind: CustomResourceDefinition
+        name: applicationsets.argoproj.io
+      register: crd_apps
+      until: crd_apps.resources | length > 0 and
+        (crd_apps.resources.0.status.conditions
+        | selectattr('type','equalto','Established')
+        | selectattr('status','equalto','True') | list | length) > 0
+      retries: 30
+      delay: 4
+
+    - name: Refresh local API discovery (optional)
+      ansible.builtin.command: kubectl api-resources --request-timeout=10s
+      changed_when: false
+
+    # 3) Aplica o restante (inclui Application, ApplicationSet etc.)
+    - name: Apply remaining ArgoCD manifests
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ item }}"
         apply: true
-        server_side_apply:
-          field_manager: argocd-controller
+      loop: "{{ argocd_non_crds }}"
+      loop_control:
+        label: "{{ item.kind }} {{ (item.metadata.name | default('')) }}"
