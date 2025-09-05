@@ -8,6 +8,8 @@ KUBE_CONFIG_PATH = $(KUBECONFIG)
 
 default: k3s configure-cluster system external smoke-test post-install
 
+reset: k3s-reset wipe-disk
+
 ########### CLuster
 k3s:
 	cd k3s-ansible && \
