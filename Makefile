@@ -6,7 +6,7 @@
 KUBECONFIG := $(HOME)/.kube/kubeconfig.yaml
 KUBE_CONFIG_PATH = $(KUBECONFIG)
 
-default: k3s configure-cluster system external smoke-test post-install
+default: wipe-disk k3s configure-cluster system external smoke-test post-install
 
 reset: k3s-reset wipe-disk
 
