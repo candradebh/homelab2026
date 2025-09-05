@@ -245,6 +245,15 @@ sudo wipefs -a /dev/sdb
 sudo blkdiscard /dev/sdb || sudo dd if=/dev/zero of=/dev/sdb bs=1M count=100
 ```
 
+Investigar
+```
+kubectl -n rook-ceph get ds/rook-ceph-discover -o wide
+kubectl -n rook-ceph get pods -l app=rook-ceph-mon -o wide
+kubectl -n rook-ceph describe pod -l app=rook-ceph-mon
+kubectl -n rook-ceph get events --sort-by=.lastTimestamp | tail -n 120
+```
+
+
 
 kubectl delete pod -n rook-ceph -l app=rook-ceph-operator
 

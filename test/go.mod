@@ -1,4 +1,4 @@
-module git.multiversonline.com.br/ops/homelab
+module git.multiversonline.com.br/ops/homelab2026
 
 go 1.21
 
