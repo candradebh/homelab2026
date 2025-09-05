@@ -1,77 +1,44 @@
-# CHART: rook-ceph (operator)
 rook-ceph:
   monitoring:
     enabled: true
-  # mantém o discover SEMPRE ligado (evita Argo desligar depois)
-  enableDiscoveryDaemon: true
-
-# CHART: rook-ceph-cluster
 rook-ceph-cluster:
   monitoring:
     enabled: true
     createPrometheusRules: true
-
   cephClusterSpec:
-    dataDirHostPath: /var/lib/rook
-
     mon:
-      count: 3              # você tem 3 masters; ok manter 3
-      allowMultiplePerNode: false
-
+      count: 3
     mgr:
       count: 2
-
     dashboard:
       ssl: false
-
     logCollector:
       enabled: false
-
     removeOSDsIfOutAndSafeToRemove: true
-
     resources:
       mgr:
-        limits:   { memory: "1Gi" }
-        requests: { cpu: "100m", memory: "512Mi" }
+        limits:
+          memory: "1Gi"
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
       mon:
-        limits:   { memory: "2Gi" }
-        requests: { cpu: "100m", memory: "100Mi" }
+        limits:
+          memory: "2Gi"
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
       osd:
-        limits:   { memory: "4Gi" }
-        requests: { cpu: "100m", memory: "512Mi" }
-
-    # >>>>>>>>>>>> ADIÇÃO IMPORTANTE: armazenamento <<<<<<<<<<<<
-    storage:
-      useAllNodes: true
-      useAllDevices: false
-      devices:
-        - name: sdb            # seu disco CRU de 200GB
-
-    # >>>>>>>>>>>> ADIÇÃO IMPORTANTE: tolerations em masters <<<<<<<<<<<<
-    placement:
-      mon:
-        tolerations:
-          - { key: "node-role.kubernetes.io/control-plane", operator: "Exists", effect: "NoSchedule" }
-          - { key: "node-role.kubernetes.io/master",        operator: "Exists", effect: "NoSchedule" }
-      mgr:
-        tolerations:
-          - { key: "node-role.kubernetes.io/control-plane", operator: "Exists", effect: "NoSchedule" }
-          - { key: "node-role.kubernetes.io/master",        operator: "Exists", effect: "NoSchedule" }
-      osd:
-        tolerations:
-          - { key: "node-role.kubernetes.io/control-plane", operator: "Exists", effect: "NoSchedule" }
-          - { key: "node-role.kubernetes.io/master",        operator: "Exists", effect: "NoSchedule" }
-      prepareosd:
-        tolerations:
-          - { key: "node-role.kubernetes.io/control-plane", operator: "Exists", effect: "NoSchedule" }
-          - { key: "node-role.kubernetes.io/master",        operator: "Exists", effect: "NoSchedule" }
-
-  # POOl RBD padrão — comece com size: 1 (enquanto só há 1 OSD)
+        limits:
+          memory: "4Gi"
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
   cephBlockPools:
     - name: standard-rwo
       spec:
         replicated:
-          size: 1          # <-- mude para 3 quando tiver 3 OSDs/nós
+          size: 2
       storageClass:
         enabled: true
         name: standard-rwo
@@ -85,26 +52,28 @@ rook-ceph-cluster:
           csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
           csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
           csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
-
   cephBlockPoolsVolumeSnapshotClass:
     enabled: true
     isDefault: true
-
-  # CephFS — também inicie com size: 1
   cephFileSystems:
     - name: standard-rwx
       spec:
         metadataPool:
-          replicated: { size: 1 }    # <-- depois volte para 3
+          replicated:
+            size: 2
         dataPools:
           - name: data0
-            replicated: { size: 1 }  # <-- depois volte para 3
+            replicated:
+              size: 2
         metadataServer:
           activeCount: 1
           activeStandby: true
           resources:
-            limits:   { memory: "4Gi" }
-            requests: { cpu: "100m", memory: "100Mi" }
+            limits:
+              memory: "4Gi"
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
           priorityClassName: system-cluster-critical
       storageClass:
         enabled: true
@@ -119,9 +88,7 @@ rook-ceph-cluster:
           csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
           csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
           csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
-
   cephFileSystemVolumeSnapshotClass:
     enabled: true
     isDefault: false
-
   cephObjectStores: []

@@ -1,17 +1,25 @@
 - name: Bootstrapping the cluster
   hosts: localhost
   gather_facts: false
+
   vars:
+    # Namespace, release e caminho do chart do ArgoCD
     argocd_ns: argocd
+    argocd_release: argocd
+    argocd_chart: ./argocd
+
   tasks:
-    - name: Create ArgoCD namespace
+    # 1) Garante que o namespace do ArgoCD exista (idempotente)
+    - name: Ensure ArgoCD namespace exists
       kubernetes.core.k8s:
         api_version: v1
         kind: Namespace
         name: "{{ argocd_ns }}"
         state: present
 
-    - name: Check if this is the first installation
+    # 2) Detecta se é a primeira instalação (sem pods do Gitea rodando)
+    #    Usado para escolher o values de "seed" vs "normal"
+    - name: Detect if this is the first installation (no Gitea running)
       kubernetes.core.k8s_info:
         kind: Pod
         label_selectors:
@@ -20,50 +28,29 @@
           - status.phase=Running
       register: first_install
 
-    - name: Render ArgoCD manifests from Helm chart (includes CRDs)
+    # Deixa explícito qual arquivo de values será usado (apenas clareza)
+    - name: Decide which values file to use
+      ansible.builtin.set_fact:
+        argocd_values_file: >-
+          {{ 'argocd/values-seed.yaml'
+             if (first_install.resources | length == 0)
+             else 'argocd/values.yaml' }}
+
+    # 3) Renderiza o chart Helm do ArgoCD em manifests (inclui CRDs)
+    - name: Render ArgoCD Helm chart into raw manifests (includes CRDs)
       kubernetes.core.helm_template:
-        chart_ref: ./argocd
+        chart_ref: "{{ argocd_chart }}"
         include_crds: true
-        release_name: argocd
+        release_name: "{{ argocd_release }}"
         release_namespace: "{{ argocd_ns }}"
         dependency_update: true
         values_files:
-          - "argocd/{{ (first_install.resources | length == 0) | ternary('values-seed.yaml', 'values.yaml') }}"
-      register: argocd_tpl
+          - "{{ argocd_values_file }}"
+      register: argocd_manifests
 
-    # --- SEPARA CRDs dos demais recursos ---
-    - name: Parse rendered manifests
-      set_fact:
-        argocd_docs: "{{ argocd_tpl.stdout | from_yaml_all | list }}"
-
-    - name: Select only CRDs
-      set_fact:
-        argocd_crds: "{{ argocd_docs | selectattr('kind','equalto','CustomResourceDefinition') | list }}"
-        argocd_non_crds: "{{ argocd_docs | rejectattr('kind','equalto','CustomResourceDefinition') | list }}"
-
-    # 1) Aplica CRDs primeiro
-    - name: Apply ArgoCD CRDs
-      kubernetes.core.k8s:
-        state: present
-        definition: "{{ item }}"
-      loop: "{{ argocd_crds }}"
-      loop_control: { label: "{{ item.metadata.name }}" }
-
-    # 2) Espera os CRDs ficarem Established
-    - name: Wait for CRD applications.argoproj.io
-      kubernetes.core.k8s_info:
-        api_version: apiextensions.k8s.io/v1
-        kind: CustomResourceDefinition
-        name: applications.argoproj.io
-      register: crd_app
-      until: crd_app.resources | length > 0 and
-        (crd_app.resources.0.status.conditions
-        | selectattr('type','equalto','Established')
-        | selectattr('status','equalto','True') | list | length) > 0
-      retries: 30
-      delay: 4
-
-    - name: Wait for CRD applicationsets.argoproj.io
+    # 4) Aguarda o CRD ApplicationSet ficar disponível/Established
+    #    (importante para o apply subsequente funcionar sem corrida)
+    - name: Wait for CRD applicationsets.argoproj.io to be Established
       kubernetes.core.k8s_info:
         api_version: apiextensions.k8s.io/v1
         kind: CustomResourceDefinition
@@ -76,16 +63,11 @@
       retries: 30
       delay: 4
 
-    - name: Refresh local API discovery (optional)
-      ansible.builtin.command: kubectl api-resources --request-timeout=10s
-      changed_when: false
-
-    # 3) Aplica o restante (inclui Application, ApplicationSet etc.)
-    - name: Apply remaining ArgoCD manifests
+    # 5) Aplica TODOS os manifests renderizados via Server-Side Apply (SSA)
+    #    O field_manager ajuda a distinguir as mudanças feitas pelo ArgoCD.
+    - name: Apply rendered ArgoCD manifests (server-side apply)
       kubernetes.core.k8s:
-        state: present
-        definition: "{{ item }}"
+        resource_definition: "{{ argocd_manifests.stdout }}"
         apply: true
-      loop: "{{ argocd_non_crds }}"
-      loop_control:
-        label: "{{ item.kind }} {{ (item.metadata.name | default('')) }}"
+        server_side_apply:
+          field_manager: argocd-controller
